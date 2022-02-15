@@ -39,4 +39,33 @@ public class IntegerCountingSorter implements Sorter<Integer> {
 
     return sorted;
   }
+
+  @Override
+  public Integer[] sort( Integer[] array, BreadCrumbs<Integer> bc ) {
+    Integer[] sorted = new Integer[ array.length ];
+    final int k = MAX_LIMIT - MIN_LIMIT;
+    int[] counts = new int[ k + 1 ];
+    Arrays.fill( counts, 0 );
+
+    for ( Integer number : array ) {
+      final int j = getKey( number );
+      bc.appendCrumb( j );
+      counts[ j ]++;
+    }
+
+    for ( int i = 1; i < k + 1; ++i ) {
+      counts[ i ] += counts[ i - 1 ];
+      bc.appendCrumb( i );
+    }
+
+    for ( int i = array.length - 1; i >= 0; --i ) {
+      final int j = getKey( array[ i ] );
+      bc.appendCrumb( j );
+      counts[ j ]--;
+      bc.appendCrumb( counts[ j ] );
+      sorted[ counts[ j ] ] = array[ i ];
+    }
+
+    return sorted;
+  }
 }
